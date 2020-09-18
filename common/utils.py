@@ -3,7 +3,7 @@ import configparser
 import logging
 import time
 
-root_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'..','Logfile')
+root_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'..')
 
 class LogHandler():
     def __init__(self,name = 'test',setLvl = logging.NOTSET):
@@ -11,14 +11,14 @@ class LogHandler():
             tmp_dir = self.get_log_route()
         except configparser.NoSectionError:
             try:
-                os.listdir(os.path.join(root_dir, 'log'))
+                os.listdir(os.path.join(root_dir, 'Logfile'))
             except FileNotFoundError:
-                os.mkdir(os.path.join(root_dir, 'log'))
+                os.mkdir(os.path.join(root_dir, 'Logfile'))
             finally:
                 tmp_dir = root_dir
 
         logging.root.setLevel(setLvl)
-        log_file = os.path.join(tmp_dir, 'log', '{}'.format(name))
+        log_file = os.path.join(tmp_dir, 'Logfile', '{}'.format(name))
         _log = logging.getLogger()
         f_handler = logging.FileHandler(log_file)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
