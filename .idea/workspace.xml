@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="" />
+    <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/common/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset_for_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_for_classifier.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,15 +20,21 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/common/datetime_process.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/parser.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/bayesian_opt.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/dataset_transfer.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/common/utils.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/dataset_for_classifier.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="1gwHbEfMtqcP3OkYfNi5L1qQhHL" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
@@ -151,15 +162,17 @@
     </task>
     <servers />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/dataset_for_classifier.py</url>
-          <line>137</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

@@ -11,6 +11,7 @@ from tqdm import tqdm
 from sklearn import preprocessing
 import copy
 from sklearn.model_selection import train_test_split, cross_val_score
+from common.utils import LogHandler, log
 
 model_param = {
     "model_settings": {
@@ -42,7 +43,7 @@ PARAM_TEST = {
     'pre_model_param':model_param,
 }
 
-
+logHandler = LogHandler()._log
 
 
 class DatasetPool():
@@ -100,6 +101,7 @@ class DatasetPool():
         end_time = time()
         print('Time Usage for data preprocessing is : {:.2f}'.format((end_time - begin_time)))
 
+
     def operator_pretraining(self,**kwargs):
         for oprtr in self.operator:
             begin_time = time()
@@ -109,6 +111,8 @@ class DatasetPool():
 
     # train twice for oprtr on all dataset given.
     # the first one with origin features and second on oprtred features.
+
+    @log(_log = logHandler)
     def training_operator_performance(self,oprtr:str) -> None:
 
         #load LFE table for oprtr
@@ -121,29 +125,32 @@ class DatasetPool():
         for __dataset_name in df_lfe_table.index.levels[0]:
             __df_raw_data = self.load_dataset_data(__dataset_name)[0]
 
+            #downsample data to avoid too much dimision of features.
+            # __df_raw_data[:,0:-1] = self.feature_reduction(__df_raw_data[:,0:-1])
+
             for __label in df_lfe_table.loc[__dataset_name].index.get_level_values(0).unique():
                 # for origin feature scored performance.
                 # print(__df_raw_data)
-                score = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = __label)
+                score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = __label)
+                logHandler.info('Original scores: ',score_origin)
 
                 for __feature in df_lfe_table.loc[__dataset_name,__label].index.get_level_values(0).unique():
-                        print('⚪' * 30)
-                        print(__dataset_name,__label,__feature)
 
-                        # for trans features.
-                        __df_trans_raw_data = __df_raw_data
-                        __df_trans_raw_data.iloc[:,__feature] = self.operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
-                        # print(__df_trans_raw_data)
-                        score = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
-                        print('SUCC SCORED.')
-                        return
+                        logHandler.info('TAG:',str([__dataset_name,__label,__feature]))
 
-                        # update LFE table.
+                        if  df_lfe_table.loc[__dataset_name,__label,__feature].isnull().values[0]:
 
-                        # df_lfe_table.loc[(df_lfe_table['dataset_name'] == __dataset_name)
-                        #          & (df_lfe_table['label'] == __label)]['performance'] = score
-                        # self.dict_LFEtable[oprtr] = df_lfe_table
-                        # self.save_LFE_table(oprtr)
+                            # for trans features.
+                            __df_trans_raw_data = __df_raw_data
+                            __df_trans_raw_data.iloc[:,__feature] = self.operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
+                            score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
+                            logHandler.info('SUCC SCORED: ',score_trans - score_origin)
+
+                            df_lfe_table.loc[__dataset_name,__label,__feature] = (score_trans - score_origin)
+
+                            # update LFE table.
+                            self.dict_LFEtable[oprtr] = df_lfe_table.reset_index()
+                            self.save_LFE_table(oprtr)
 
         return
 
@@ -154,6 +161,17 @@ class DatasetPool():
 
 
         return
+
+    def feature_reduction(self,df_data:pd.DataFrame,n_components=49)->pd.DataFrame:
+        from sklearn.decomposition import PCA
+
+        if df_data.shape[1] <= n_components :
+            return df_data
+
+        else:
+            pca = PCA(n_components=n_components)
+            return df_data.fit_transform(df_data)
+
 
     def run_training_model(self,df_raw_data,dataset_name,label,model = 'GradientBoostingClassifierV2Ai',max_num = 10000):
 
@@ -168,8 +186,8 @@ class DatasetPool():
         data_y = labelendr.fit_transform(df_raw_data_label)[0:max_num]
         data_x = df_raw_data.iloc[:,0:-1].as_matrix()[0:max_num,:]
 
-        print(data_x)
-        print(data_y)
+        print(data_x.shape)
+        # print(data_y)
 
         # # fit into [example , feature]
         # labels = np.array(labels).reshape(len(labels), 1)
@@ -181,7 +199,7 @@ class DatasetPool():
         clf_svc_cv = GradientBoostingClassifier(**self.pre_model_param['model_settings'])
         scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
         print(scores_clf_cv)
-        print("Accuracy: %0.2f (+/- %0.2f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
+        print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
         return scores_clf_cv.mean()
 
     def load_dataset_name(self)->list:
@@ -378,6 +396,7 @@ class DatasetPool():
 
 
 if __name__ == '__main__':
+
 
     pa = DatasetPool(PARAM_TEST)
     # pa.dataset_preprocessing()
