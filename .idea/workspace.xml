@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/common/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/thread.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset_for_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_for_classifier.py" afterDir="false" />
     </list>
@@ -29,6 +28,7 @@
     <setting file="file://$PROJECT_DIR$/bayesian_opt.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/dataset_transfer.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/utils.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/main.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/dataset_for_classifier.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="1gwHbEfMtqcP3OkYfNi5L1qQhHL" />
@@ -55,7 +55,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.dataset_for_classifier">
+  <component name="RunManager" selected="Python.main">
     <configuration name="bayesian_opt" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="automl" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -140,8 +140,30 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="automl" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.dataset_for_classifier" />
         <item itemvalue="Python.dataset_transfer" />
         <item itemvalue="Python.dataset_preprocessing" />
@@ -160,6 +182,21 @@
       <option name="presentableId" value="Default" />
       <updated>1599018803815</updated>
     </task>
+    <task id="LOCAL-00001" summary="v 0.55.&#10;add log function.">
+      <created>1600402890443</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1600402890443</updated>
+    </task>
+    <task id="LOCAL-00002" summary="v 0.59.&#10;shuffle the data before feed into k-fold model.">
+      <created>1600413422524</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1600413422524</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -174,5 +211,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="v 0.55.&#10;add log function." />
+    <MESSAGE value="v 0.59.&#10;shuffle the data before feed into k-fold model." />
+    <option name="LAST_COMMIT_MESSAGE" value="v 0.59.&#10;shuffle the data before feed into k-fold model." />
   </component>
 </project>

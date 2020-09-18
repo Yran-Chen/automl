@@ -68,7 +68,7 @@ class DatasetPool():
 
         self.dataset_input = {}
 
-
+    @log(_log = logHandler)
     def run(self,**kwargs):
         self.dataset_preprocessing(**kwargs)
         self.operator_pretraining(**kwargs)
@@ -100,6 +100,7 @@ class DatasetPool():
 
         end_time = time()
         print('Time Usage for data preprocessing is : {:.2f}'.format((end_time - begin_time)))
+        logHandler.info('Time Usage for data preprocessing is : {:.2f}'.format((end_time - begin_time)))
 
 
     def operator_pretraining(self,**kwargs):
@@ -108,11 +109,12 @@ class DatasetPool():
             self.training_operator_performance(oprtr)
             end_time = time()
             print('Time Usage for op {} pre-training is : {:.2f}'.format(oprtr, (end_time - begin_time)))
+            logHandler.info('Time Usage for op {} pre-training is : {:.2f}'.format(oprtr, (end_time - begin_time)))
 
     # train twice for oprtr on all dataset given.
     # the first one with origin features and second on oprtred features.
 
-    @log(_log = logHandler)
+
     def training_operator_performance(self,oprtr:str) -> None:
 
         #load LFE table for oprtr
@@ -132,11 +134,11 @@ class DatasetPool():
                 # for origin feature scored performance.
                 # print(__df_raw_data)
                 score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = __label)
-                logHandler.info('Original scores: ',score_origin)
+                logHandler.info(  '{}{}'.format('Original scores: ',score_origin)  )
 
                 for __feature in df_lfe_table.loc[__dataset_name,__label].index.get_level_values(0).unique():
 
-                        logHandler.info('TAG:',str([__dataset_name,__label,__feature]))
+                        logHandler.info( "{}{}".format(  'TAG:',str([__dataset_name,__label,__feature]) ) )
 
                         if  df_lfe_table.loc[__dataset_name,__label,__feature].isnull().values[0]:
 
@@ -144,7 +146,7 @@ class DatasetPool():
                             __df_trans_raw_data = __df_raw_data
                             __df_trans_raw_data.iloc[:,__feature] = self.operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
                             score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
-                            logHandler.info('SUCC SCORED: ',score_trans - score_origin)
+                            logHandler.info("{}{}".format( 'SUCC SCORED: ', (score_trans - score_origin)  ) )
 
                             df_lfe_table.loc[__dataset_name,__label,__feature] = (score_trans - score_origin)
 
@@ -173,21 +175,26 @@ class DatasetPool():
             return df_data.fit_transform(df_data)
 
 
-    def run_training_model(self,df_raw_data,dataset_name,label,model = 'GradientBoostingClassifierV2Ai',max_num = 10000):
+    def run_training_model(self,df_raw_data,dataset_name,label,model = 'GradientBoostingClassifierV2Ai',max_num = -1):
 
         from sklearn.ensemble import GradientBoostingClassifier
 
+        df_raw_data = df_raw_data.sample(frac=1)
         df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str)) )
 
         #trans to 1vR task.
         df_raw_data_label[df_raw_data_label!=label] = 'non_label'
 
         labelendr = preprocessing.LabelEncoder()
-        data_y = labelendr.fit_transform(df_raw_data_label)[0:max_num]
-        data_x = df_raw_data.iloc[:,0:-1].as_matrix()[0:max_num,:]
+        if max_num  > 0 :
+            data_y = labelendr.fit_transform(df_raw_data_label)[0:max_num]
+            data_x = df_raw_data.iloc[:,0:-1].as_matrix()[0:max_num,:]
+        else:
+            data_y = labelendr.fit_transform(df_raw_data_label)
+            data_x = df_raw_data.iloc[:, 0:-1].as_matrix()
 
-        print(data_x.shape)
-        # print(data_y)
+        logHandler.info(str(data_x.shape))
+        logHandler.info(str(data_y))
 
         # # fit into [example , feature]
         # labels = np.array(labels).reshape(len(labels), 1)
