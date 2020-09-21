@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/multiprocessingPool.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset_for_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_for_classifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/thread.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,6 +31,7 @@
     <setting file="file://$PROJECT_DIR$/common/utils.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/main.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/dataset_for_classifier.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/multiprocessingPool.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="1gwHbEfMtqcP3OkYfNi5L1qQhHL" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -39,6 +41,10 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\!DTStack\automl" />
+      <recent name="D:\!DTStack\automl\common" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\!DTStack\automl" />
     </key>
@@ -56,27 +62,6 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.dataset_for_classifier">
-    <configuration name="bayesian_opt" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="automl" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bayesian_opt.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="dataset_for_classifier" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="automl" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -90,48 +75,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dataset_for_classifier.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="dataset_preprocessing" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="automl" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dataset_preprocessing.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="dataset_transfer" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="automl" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/common" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/common/dataset_transfer.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -161,13 +104,76 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="multiprocessingPool (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="automl" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/multiprocessingPool.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="multiprocessingPool" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="automl" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="D:\!DTStack\automl\multiprocessingPool.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="thread" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="automl" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/thread.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Python.dataset_for_classifier" />
+        <item itemvalue="Python.multiprocessingPool (1)" />
+        <item itemvalue="Python.multiprocessingPool" />
+        <item itemvalue="Python.thread" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.dataset_transfer" />
-        <item itemvalue="Python.dataset_preprocessing" />
-        <item itemvalue="Python.bayesian_opt" />
       </list>
     </recent_temporary>
   </component>
@@ -203,7 +209,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600413512643</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="v 0.6.&#10;bug fixed &#10;-&gt; 1.label str before save into config;&#10;   2.logTime recording time usage;">
+      <created>1600656570933</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1600656570933</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -222,6 +235,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="v 0.55.&#10;add log function." />
     <MESSAGE value="v 0.59.&#10;shuffle the data before feed into k-fold model." />
-    <option name="LAST_COMMIT_MESSAGE" value="v 0.59.&#10;shuffle the data before feed into k-fold model." />
+    <MESSAGE value="v 0.6.&#10;bug fixed &#10;-&gt; 1.label str before save into config;&#10;   2.logTime recording time usage;" />
+    <option name="LAST_COMMIT_MESSAGE" value="v 0.6.&#10;bug fixed &#10;-&gt; 1.label str before save into config;&#10;   2.logTime recording time usage;" />
   </component>
 </project>

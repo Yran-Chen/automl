@@ -1,17 +1,15 @@
 import numpy as np
 import pandas as pd
-from abc import ABC, abstractmethod
 import os
 import json
 import codecs
 import pickle
 from time import *
-from tqdm import tqdm
 
 from sklearn import preprocessing
 import copy
-from sklearn.model_selection import train_test_split, cross_val_score
-from common.utils import LogHandler, log, logTime
+from sklearn.model_selection import cross_val_score
+from multiprocessing import Process, Pool
 
 model_param = {
     "model_settings": {
@@ -43,7 +41,12 @@ PARAM_TEST = {
     'pre_model_param':model_param,
 }
 
+from common.utils import LogHandler, log, logTime
 logHandler = LogHandler()._log
+
+
+from common.dataset_transfer import OperatorParser
+operatorParser = OperatorParser()
 
 
 class DatasetPool():
@@ -63,8 +66,11 @@ class DatasetPool():
         self.dict_LFEtable_config = None
         self.dict_dataset_config = None
 
-        from common.dataset_transfer import OperatorParser
-        self.operatorParser = OperatorParser()
+        # from common.dataset_transfer import OperatorParser
+        # self.operatorParser = OperatorParser()
+
+
+        self.pool = None
 
         self.dataset_input = {}
 
@@ -136,16 +142,21 @@ class DatasetPool():
                 score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = __label)
                 logHandler.info(  '{}{}'.format('Original scores: ',score_origin)  )
 
+
+                pool = Pool(processes=4)
                 for __feature in df_lfe_table.loc[__dataset_name,__label].index.get_level_values(0).unique():
 
                         logHandler.info( "{}{}".format(  'TAG:',str([__dataset_name,__label,__feature]) ) )
-
                         if  df_lfe_table.loc[__dataset_name,__label,__feature].isnull().values[0]:
+
+                            start_time = time()
 
                             # for trans features.
                             __df_trans_raw_data = __df_raw_data
-                            __df_trans_raw_data.iloc[:,__feature] = self.operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
-                            score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
+                            __df_trans_raw_data.iloc[:,__feature] = operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
+
+                            score_trans = pool.apply_async( self.run_training_model, ( __df_trans_raw_data, __dataset_name,__label, ) ).get()
+                            # score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
                             logHandler.info("{}{}".format( 'SUCC SCORED: ', (score_trans - score_origin)  ) )
 
                             df_lfe_table.loc[__dataset_name,__label,__feature] = (score_trans - score_origin)
@@ -153,6 +164,13 @@ class DatasetPool():
                             # update LFE table.
                             self.dict_LFEtable[oprtr] = df_lfe_table.reset_index()
                             self.save_LFE_table(oprtr)
+
+                            end_time = time()
+                            print ( 'Time usage is: %0.2f' % (end_time - start_time) )
+                            logHandler.info('Time usage is: %0.2f' % (end_time - start_time))
+
+                pool.close()
+                pool.join()
 
         return
 
@@ -174,7 +192,7 @@ class DatasetPool():
             pca = PCA(n_components=n_components)
             return df_data.fit_transform(df_data)
 
-    @logTime(_log=logHandler)
+    # @logTime(_log=logHandler)
     def run_training_model(self,df_raw_data,dataset_name,label,
                            model = 'GradientBoostingClassifierV2Ai',max_num = 10000):
 
@@ -189,7 +207,7 @@ class DatasetPool():
         labelendr = preprocessing.LabelEncoder()
         if max_num  > 0 :
             data_y = labelendr.fit_transform(df_raw_data_label)[0:max_num]
-            data_x = df_raw_data.iloc[:,0:-1].as_matrix()[0:max_num,:]
+            data_x = df_raw_data.iloc[:,0:-1].values[0:max_num,:]
         else:
             data_y = labelendr.fit_transform(df_raw_data_label)
             data_x = df_raw_data.iloc[:, 0:-1].as_matrix()
