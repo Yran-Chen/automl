@@ -71,3 +71,28 @@ def log(_log):
 
     return decorator
 
+def logTime(_log):
+
+    def decorator(f):
+
+        def wrapper(ins, **kwargs):
+            _log.info('********************************************************************************')
+
+            _log.info('{} start at {}'.format(f.__name__, str(time.ctime())))
+            start_time = time.time()
+            try:
+                a = f(ins, **kwargs)
+                _log.info('{} end at {}'.format(f.__name__, str(time.ctime())))
+                end_time = time.time()
+
+                _log.info('Time usage is: {}'.format( str(end_time - start_time) )  )
+            except Exception as e:
+                _log.error(e, exc_info=True)
+                raise e
+            finally:
+                return a
+                _log.info('********************************************************************************')
+
+        return wrapper
+
+    return decorator

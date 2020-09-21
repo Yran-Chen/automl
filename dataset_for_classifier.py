@@ -11,7 +11,7 @@ from tqdm import tqdm
 from sklearn import preprocessing
 import copy
 from sklearn.model_selection import train_test_split, cross_val_score
-from common.utils import LogHandler, log
+from common.utils import LogHandler, log, logTime
 
 model_param = {
     "model_settings": {
@@ -174,8 +174,9 @@ class DatasetPool():
             pca = PCA(n_components=n_components)
             return df_data.fit_transform(df_data)
 
-
-    def run_training_model(self,df_raw_data,dataset_name,label,model = 'GradientBoostingClassifierV2Ai',max_num = -1):
+    @logTime(_log=logHandler)
+    def run_training_model(self,df_raw_data,dataset_name,label,
+                           model = 'GradientBoostingClassifierV2Ai',max_num = 10000):
 
         from sklearn.ensemble import GradientBoostingClassifier
 
@@ -194,7 +195,7 @@ class DatasetPool():
             data_x = df_raw_data.iloc[:, 0:-1].as_matrix()
 
         logHandler.info(str(data_x.shape))
-        logHandler.info(str(data_y))
+        # logHandler.info(str(data_y))
 
         # # fit into [example , feature]
         # labels = np.array(labels).reshape(len(labels), 1)
@@ -278,7 +279,7 @@ class DatasetPool():
     #fetch all data through dataset name.
     def load_dataset_data(self,dataset_name:str)-> (pd.DataFrame,list,list):
         if dataset_name in self.dataset_input.keys():
-            return self.dataset_input[dataset_name]
+            return self.dataset_input[dataset_name],None,None
         df_data = pd.DataFrame()
         for __dataset_dir in self.dataset_dir[dataset_name]:
             df_data = pd.concat([df_data,self.load_from_csv(__dataset_dir)],axis = 0)
@@ -286,7 +287,7 @@ class DatasetPool():
         # For large memory.
         self.dataset_input[dataset_name] = df_data
 
-        label = list(df_data.iloc[:,-1].unique())
+        label = [ str(lbl) for lbl in df_data.iloc[:,-1].unique()]
         shape = list(df_data.shape)
         return df_data,label,shape
 

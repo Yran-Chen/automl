@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/thread.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/common/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset_for_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_for_classifier.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -55,7 +55,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.dataset_for_classifier">
     <configuration name="bayesian_opt" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="automl" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -163,8 +163,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.dataset_for_classifier" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.dataset_transfer" />
         <item itemvalue="Python.dataset_preprocessing" />
         <item itemvalue="Python.bayesian_opt" />
@@ -196,7 +196,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600413422524</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="v 0.59.&#10;shuffle the data before feed into k-fold model.">
+      <created>1600413512643</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1600413512643</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
