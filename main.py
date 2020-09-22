@@ -22,8 +22,8 @@ OP_DICT = [
 
 PARAM_TEST = {
     'name':'test',
-    'data_dir': r'D:\!DTStack\Dataset\UCI_\ml\machine-learning-databases',
-    'save_dir': r"D:\!DTStack\Savefile",
+    'data_dir': '/data/!workspace/dataset/UCI/classification',
+    'save_dir': '/data/!workspace/Savefile',
     'threshold':0.01,
     'operator':OP_DICT,
     'selected': '!f',

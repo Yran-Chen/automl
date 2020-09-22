@@ -139,7 +139,7 @@ class DatasetPool():
             for __label in df_lfe_table.loc[__dataset_name].index.get_level_values(0).unique():
                 # for origin feature scored performance.
                 # print(__df_raw_data)
-                score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = __label)
+                score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = str(__label))
                 logHandler.info(  '{}{}'.format('Original scores: ',score_origin)  )
 
 
@@ -155,7 +155,7 @@ class DatasetPool():
                             __df_trans_raw_data = __df_raw_data
                             __df_trans_raw_data.iloc[:,__feature] = operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
 
-                            score_trans = pool.apply_async( self.run_training_model, ( __df_trans_raw_data, __dataset_name,__label, ) ).get()
+                            score_trans = pool.apply_async( self.run_training_model, ( __df_trans_raw_data, __dataset_name,str(__label), ) ).get()
                             # score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
                             logHandler.info("{}{}".format( 'SUCC SCORED: ', (score_trans - score_origin)  ) )
 
@@ -194,15 +194,19 @@ class DatasetPool():
 
     # @logTime(_log=logHandler)
     def run_training_model(self,df_raw_data,dataset_name,label,
-                           model = 'GradientBoostingClassifierV2Ai',max_num = 10000):
+                           model = 'GradientBoostingClassifierV2Ai',max_num = -1):
 
         from sklearn.ensemble import GradientBoostingClassifier
 
         df_raw_data = df_raw_data.sample(frac=1)
         df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str)) )
+        print (type(label))
+        print(label)
+        print (df_raw_data_label)
 
         #trans to 1vR task.
         df_raw_data_label[df_raw_data_label!=label] = 'non_label'
+        print (df_raw_data_label)
 
         labelendr = preprocessing.LabelEncoder()
         if max_num  > 0 :
@@ -210,7 +214,7 @@ class DatasetPool():
             data_x = df_raw_data.iloc[:,0:-1].values[0:max_num,:]
         else:
             data_y = labelendr.fit_transform(df_raw_data_label)
-            data_x = df_raw_data.iloc[:, 0:-1].as_matrix()
+            data_x = df_raw_data.iloc[:, 0:-1].values
 
         logHandler.info(str(data_x.shape))
         # logHandler.info(str(data_y))
