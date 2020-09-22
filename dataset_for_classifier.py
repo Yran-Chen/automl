@@ -141,7 +141,8 @@ class DatasetPool():
             for __label in df_lfe_table.loc[__dataset_name].index.get_level_values(0).unique():
 
                 # If still nan values remained in LFE table for [__dataset_name,__label].
-                if not df_lfe_table.loc[__dataset_name,__label].cumprod(skipna=False).iloc[:,-1].isnull().values[0]:
+
+                if not  df_lfe_table.loc[__dataset_name,__label].cumprod(skipna=False).iloc[-1].isnull().values[0]:
                     continue
                 # for origin feature scored performance.
                 # print(__df_raw_data)

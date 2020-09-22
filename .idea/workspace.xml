@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset_for_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_for_classifier.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -60,7 +59,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.dataset_for_classifier">
     <configuration name="dataset_for_classifier" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="automl" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -168,8 +167,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.dataset_for_classifier" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.multiprocessingPool (1)" />
         <item itemvalue="Python.multiprocessingPool" />
         <item itemvalue="Python.thread" />
@@ -229,7 +228,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600743550339</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="v0.73">
+      <created>1600744411976</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1600744411976</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -251,7 +257,8 @@
     <MESSAGE value="v 0.6.&#10;bug fixed &#10;-&gt; 1.label str before save into config;&#10;   2.logTime recording time usage;" />
     <MESSAGE value="v 0.7.&#10;add multiprocessing Pool to fasten the training phase." />
     <MESSAGE value="Merge branch 'master' of https://github.com/Yran-Chen/automl&#10;&#10;# Conflicts:&#10;#&#9;common/__pycache__/utils.cpython-36.pyc" />
-    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/Yran-Chen/automl&#10;&#10;# Conflicts:&#10;#&#9;common/__pycache__/utils.cpython-36.pyc" />
+    <MESSAGE value="v0.73" />
+    <option name="LAST_COMMIT_MESSAGE" value="v0.73" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
