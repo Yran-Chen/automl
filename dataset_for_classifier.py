@@ -39,6 +39,7 @@ PARAM_TEST = {
     'operator':OP_DICT,
     'selected': '!f',
     'pre_model_param':model_param,
+    'percent':1.0,
 }
 
 from common.utils import LogHandler, log, logTime
@@ -60,6 +61,7 @@ class DatasetPool():
         self.threshold = param['threshold']
         self.pre_model_param = param['pre_model_param']
         self.selected = param['selected']
+        self.percent_ = param['percent']
         self.dataset = None
         self.dataset_dir = {}
         self.dict_LFEtable = {}
@@ -130,16 +132,21 @@ class DatasetPool():
         #synchronize dataset_for_training for current LFE table.
         #For DataFrame "oprtr" -> columns = [dataset_name, label, performance]
         # LFE table -> fetch previous progress.
-        for __dataset_name in df_lfe_table.index.levels[0]:
+        for __dataset_name in self.dataset:
             __df_raw_data = self.load_dataset_data(__dataset_name)[0]
 
             #downsample data to avoid too much dimision of features.
             # __df_raw_data[:,0:-1] = self.feature_reduction(__df_raw_data[:,0:-1])
 
             for __label in df_lfe_table.loc[__dataset_name].index.get_level_values(0).unique():
+
+                # If still nan values remained in LFE table for [__dataset_name,__label].
+                if not df_lfe_table.loc[__dataset_name,__label].cumprod(skipna=False).iloc[:,-1].isnull().values[0]:
+                    continue
                 # for origin feature scored performance.
                 # print(__df_raw_data)
-                score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = __label)
+                logHandler.info("{}{}".format('TAG:', str([__dataset_name, __label])))
+                score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = str(__label))
                 logHandler.info(  '{}{}'.format('Original scores: ',score_origin)  )
 
 
@@ -155,7 +162,7 @@ class DatasetPool():
                             __df_trans_raw_data = __df_raw_data
                             __df_trans_raw_data.iloc[:,__feature] = operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
 
-                            score_trans = pool.apply_async( self.run_training_model, ( __df_trans_raw_data, __dataset_name,__label, ) ).get()
+                            score_trans = pool.apply_async( self.run_training_model, ( __df_trans_raw_data, __dataset_name,str(__label), ) ).get()
                             # score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
                             logHandler.info("{}{}".format( 'SUCC SCORED: ', (score_trans - score_origin)  ) )
 
@@ -194,23 +201,28 @@ class DatasetPool():
 
     # @logTime(_log=logHandler)
     def run_training_model(self,df_raw_data,dataset_name,label,
-                           model = 'GradientBoostingClassifierV2Ai',max_num = 10000):
+                           model = 'GradientBoostingClassifierV2Ai'):
 
         from sklearn.ensemble import GradientBoostingClassifier
 
         df_raw_data = df_raw_data.sample(frac=1)
         df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str)) )
+        print (type(label))
+        print(label)
+        print (df_raw_data_label)
 
         #trans to 1vR task.
         df_raw_data_label[df_raw_data_label!=label] = 'non_label'
+        print (df_raw_data_label)
 
         labelendr = preprocessing.LabelEncoder()
-        if max_num  > 0 :
-            data_y = labelendr.fit_transform(df_raw_data_label)[0:max_num]
-            data_x = df_raw_data.iloc[:,0:-1].values[0:max_num,:]
-        else:
-            data_y = labelendr.fit_transform(df_raw_data_label)
-            data_x = df_raw_data.iloc[:, 0:-1].as_matrix()
+
+        per_num  = int ( self.percent_ * len(df_raw_data_label.index) )
+        print (per_num)
+
+        data_y = labelendr.fit_transform(df_raw_data_label)[0:per_num]
+        data_x = df_raw_data.iloc[:,0:-1].values[0:per_num,:]
+
 
         logHandler.info(str(data_x.shape))
         # logHandler.info(str(data_y))

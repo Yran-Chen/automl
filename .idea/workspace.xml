@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/multiprocessingPool.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset_for_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_for_classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/thread.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -61,7 +60,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.dataset_for_classifier">
+  <component name="RunManager" selected="Python.main">
     <configuration name="dataset_for_classifier" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="automl" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -169,11 +168,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.dataset_for_classifier" />
         <item itemvalue="Python.multiprocessingPool (1)" />
         <item itemvalue="Python.multiprocessingPool" />
         <item itemvalue="Python.thread" />
-        <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
   </component>
@@ -216,7 +215,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600656570933</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="v 0.7.&#10;add multiprocessing Pool to fasten the training phase.">
+      <created>1600678654470</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1600678654470</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -236,6 +242,23 @@
     <MESSAGE value="v 0.55.&#10;add log function." />
     <MESSAGE value="v 0.59.&#10;shuffle the data before feed into k-fold model." />
     <MESSAGE value="v 0.6.&#10;bug fixed &#10;-&gt; 1.label str before save into config;&#10;   2.logTime recording time usage;" />
-    <option name="LAST_COMMIT_MESSAGE" value="v 0.6.&#10;bug fixed &#10;-&gt; 1.label str before save into config;&#10;   2.logTime recording time usage;" />
+    <MESSAGE value="v 0.7.&#10;add multiprocessing Pool to fasten the training phase." />
+    <option name="LAST_COMMIT_MESSAGE" value="v 0.7.&#10;add multiprocessing Pool to fasten the training phase." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/dataset_for_classifier.py</url>
+          <line>135</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="df_lfe_table.loc[__dataset_name,__label]" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
