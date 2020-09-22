@@ -222,7 +222,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600678654470</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Merge branch 'master' of https://github.com/Yran-Chen/automl&#10;&#10;# Conflicts:&#10;#&#9;common/__pycache__/utils.cpython-36.pyc">
+      <created>1600743550339</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1600743550339</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -243,7 +250,8 @@
     <MESSAGE value="v 0.59.&#10;shuffle the data before feed into k-fold model." />
     <MESSAGE value="v 0.6.&#10;bug fixed &#10;-&gt; 1.label str before save into config;&#10;   2.logTime recording time usage;" />
     <MESSAGE value="v 0.7.&#10;add multiprocessing Pool to fasten the training phase." />
-    <option name="LAST_COMMIT_MESSAGE" value="v 0.7.&#10;add multiprocessing Pool to fasten the training phase." />
+    <MESSAGE value="Merge branch 'master' of https://github.com/Yran-Chen/automl&#10;&#10;# Conflicts:&#10;#&#9;common/__pycache__/utils.cpython-36.pyc" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of https://github.com/Yran-Chen/automl&#10;&#10;# Conflicts:&#10;#&#9;common/__pycache__/utils.cpython-36.pyc" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

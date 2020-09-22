@@ -145,9 +145,15 @@ class DatasetPool():
                     continue
                 # for origin feature scored performance.
                 # print(__df_raw_data)
+                start_time = time()
+
                 logHandler.info("{}{}".format('TAG:', str([__dataset_name, __label])))
                 score_origin = self.run_training_model(df_raw_data=__df_raw_data,dataset_name = __dataset_name, label = str(__label))
                 logHandler.info(  '{}{}'.format('Original scores: ',score_origin)  )
+
+                end_time = time()
+                print('Time usage is: %0.2f' % (end_time - start_time))
+                logHandler.info('Time usage is: %0.2f' % (end_time - start_time))
 
 
                 pool = Pool(processes=4)
