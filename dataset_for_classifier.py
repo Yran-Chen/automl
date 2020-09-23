@@ -12,6 +12,8 @@ from sklearn.model_selection import cross_val_score
 from multiprocessing import Process, Pool
 
 model_param = {
+    'model':'GradientBoostingClassifier',
+
     "model_settings": {
         "loss": "deviance",
         "n_estimators": 100,
@@ -59,7 +61,11 @@ class DatasetPool():
         self.save_dir = param['save_dir']
         self.operator = param['operator']
         self.threshold = param['threshold']
+
         self.pre_model_param = param['pre_model_param']
+        self.pre_model = self.pre_model_param['model']
+        self.pre_model_setting = self.pre_model_param['model_settings']
+
         self.selected = param['selected']
         self.percent_ = param['percent']
         self.dataset = None
@@ -133,7 +139,12 @@ class DatasetPool():
         #For DataFrame "oprtr" -> columns = [dataset_name, label, performance]
         # LFE table -> fetch previous progress.
         for __dataset_name in self.dataset:
-            __df_raw_data = self.load_dataset_data(__dataset_name)[0]
+            __df_raw_data = self.load_dataset_data(__dataset_name)[0].sample(frac = 1)
+
+            # sampling data to speed up traning phase.
+            per_num = int(self.percent_ * len(__df_raw_data.index))
+            print(per_num)
+            __df_raw_data = __df_raw_data.iloc [ 0: per_num, : ]
 
             #downsample data to avoid too much dimision of features.
             # __df_raw_data[:,0:-1] = self.feature_reduction(__df_raw_data[:,0:-1])
@@ -207,10 +218,10 @@ class DatasetPool():
             return df_data.fit_transform(df_data)
 
     # @logTime(_log=logHandler)
-    def run_training_model(self,df_raw_data,dataset_name,label,
-                           model = 'GradientBoostingClassifierV2Ai'):
+    def run_training_model(self,df_raw_data,dataset_name,label):
 
         from sklearn.ensemble import GradientBoostingClassifier
+        from sklearn.ensemble import RandomForestClassifier
 
         df_raw_data = df_raw_data.sample(frac=1)
         df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str)) )
@@ -224,11 +235,8 @@ class DatasetPool():
 
         labelendr = preprocessing.LabelEncoder()
 
-        per_num  = int ( self.percent_ * len(df_raw_data_label.index) )
-        print (per_num)
-
-        data_y = labelendr.fit_transform(df_raw_data_label)[0:per_num]
-        data_x = df_raw_data.iloc[:,0:-1].values[0:per_num,:]
+        data_y = labelendr.fit_transform(df_raw_data_label)
+        data_x = df_raw_data.iloc[:,0:-1].values
 
 
         logHandler.info(str(data_x.shape))
@@ -241,7 +249,8 @@ class DatasetPool():
         # np_data_y = onehot_label.toarray()
 
         # feed into model.
-        clf_svc_cv = GradientBoostingClassifier(**self.pre_model_param['model_settings'])
+        model = eval(self.pre_model)
+        clf_svc_cv = model(**self.pre_model_setting)
         scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
         print(scores_clf_cv)
         print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
