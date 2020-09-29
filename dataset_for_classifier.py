@@ -51,6 +51,7 @@ logHandler = LogHandler()._log
 from common.dataset_transfer import OperatorParser
 operatorParser = OperatorParser()
 
+PROCESS_NUM = 8
 
 class DatasetPool():
 
@@ -152,11 +153,14 @@ class DatasetPool():
             for __label in df_lfe_table.loc[__dataset_name].index.get_level_values(0).unique():
 
                 # If still nan values remained in LFE table for [__dataset_name,__label].
-
-                if not  df_lfe_table.loc[__dataset_name,__label].cumprod(skipna=False).iloc[-1].isnull().values[0]:
+                FLAG = 1
+                for idx in df_lfe_table.loc[__dataset_name,__label].index:
+                    if df_lfe_table.loc[__dataset_name,__label].loc[idx].isnull().values[0]:
+                        FLAG = 0
+                if FLAG:
                     continue
+
                 # for origin feature scored performance.
-                # print(__df_raw_data)
                 start_time = time()
 
                 logHandler.info("{}{}".format('TAG:', str([__dataset_name, __label])))
@@ -168,7 +172,7 @@ class DatasetPool():
                 logHandler.info('Time usage is: %0.2f' % (end_time - start_time))
 
 
-                pool = Pool(processes=4)
+                pool = Pool(processes = PROCESS_NUM )
                 for __feature in df_lfe_table.loc[__dataset_name,__label].index.get_level_values(0).unique():
 
                         logHandler.info( "{}{}".format(  'TAG:',str([__dataset_name,__label,__feature]) ) )
@@ -225,19 +229,13 @@ class DatasetPool():
 
         df_raw_data = df_raw_data.sample(frac=1)
         df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str)) )
-        print (type(label))
-        print(label)
-        print (df_raw_data_label)
 
         #trans to 1vR task.
         df_raw_data_label[df_raw_data_label!=label] = 'non_label'
-        print (df_raw_data_label)
-
         labelendr = preprocessing.LabelEncoder()
 
         data_y = labelendr.fit_transform(df_raw_data_label)
         data_x = df_raw_data.iloc[:,0:-1].values
-
 
         logHandler.info(str(data_x.shape))
         # logHandler.info(str(data_y))

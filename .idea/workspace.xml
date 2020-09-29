@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="">
+    <list default="true" id="c1a7950c-5684-4f9b-8f03-e1a6f7be458d" name="Default Changelist" comment="v 0.8&#10;cong for multi server.">
+      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mstr_cong.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NNlearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/NNlearner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dataset_for_classifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset_for_classifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/layers.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/layers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/nets.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/nets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/quantileSketchArray.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/quantileSketchArray.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,14 +28,18 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/mstr_cong.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/dataset_for_classifier.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/NNlearner.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/model/nets.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/model/layers.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/model/quantileSketchArray.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/datetime_process.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/parser.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/bayesian_opt.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/dataset_transfer.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/common/utils.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/main.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/mstr_cong.py" root0="SKIP_INSPECTION" />
-    <setting file="file://$PROJECT_DIR$/dataset_for_classifier.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/multiprocessingPool.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="ProjectId" id="1gwHbEfMtqcP3OkYfNi5L1qQhHL" />
@@ -146,7 +155,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="multiprocessingPool" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="quantileSketchArray" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="automl" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -154,11 +163,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/model" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="D:\!DTStack\automl\multiprocessingPool.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/model/quantileSketchArray.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -171,9 +180,9 @@
       <list>
         <item itemvalue="Python.main" />
         <item itemvalue="Python.mstr_cong" />
+        <item itemvalue="Python.quantileSketchArray" />
         <item itemvalue="Python.dataset_for_classifier" />
         <item itemvalue="Python.multiprocessingPool (1)" />
-        <item itemvalue="Python.multiprocessingPool" />
       </list>
     </recent_temporary>
   </component>
@@ -244,7 +253,14 @@
       <option name="project" value="LOCAL" />
       <updated>1600745336515</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="v0.75.&#10;model framework.">
+      <created>1600830392207</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1600830392207</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -268,7 +284,8 @@
     <MESSAGE value="Merge branch 'master' of https://github.com/Yran-Chen/automl&#10;&#10;# Conflicts:&#10;#&#9;common/__pycache__/utils.cpython-36.pyc" />
     <MESSAGE value="v0.73" />
     <MESSAGE value="v0.74" />
-    <option name="LAST_COMMIT_MESSAGE" value="v0.74" />
+    <MESSAGE value="v0.75.&#10;model framework." />
+    <option name="LAST_COMMIT_MESSAGE" value="v0.75.&#10;model framework." />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
