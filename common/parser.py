@@ -394,6 +394,15 @@ class Parser:
         rank_ = a.groupby(level = 'date').apply(get_rank)
         return rank_
 
+    def cbrt(self,a):
+        return a.apply(np.cbrt)
+
+    def stdscaler(self,a):
+        from sklearn.preprocessing import StandardScaler
+        a = a.to_numpy().reshape(-1, 1)
+        scaler = StandardScaler()
+        scaler.fit(a)
+        return scaler.transform(a)
 
     def purify(self,a):
         return a.replace([np.inf,-np.inf],np.nan)
@@ -528,6 +537,8 @@ class Parser:
             'groupby':self.group_neutralize,
             'zscore':self.zscore,
             'sigmoid':self.sigmoid,
+            'cbrt':self.cbrt,
+            'stdscaler':self.stdscaler,
 
         }
 

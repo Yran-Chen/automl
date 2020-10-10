@@ -4,14 +4,13 @@ import numpy as np
 
 
 DICT_R_ARY ={
-    1 : ['sqrt', 'log', 'freq', 'zscore','square','sigmoid',
+    1 : ['sqrt', 'log', 'freq', 'zscore','square',
+         'sigmoid','cbrt','stdscaler'
         ],
 
     2 : ['add', 'sub', 'mul', 'div',
         ]
 }
-
-
 
 class OperatorParser():
 
@@ -32,11 +31,14 @@ class OperatorParser():
         if ary_num == 1:
             expr = '{}(data)'.format(oprtr)
             df_trans = self.parser_eval(expr,dict_parse)
-        return df_trans
+        return pd.DataFrame(df_trans)
 
 if __name__ == '__main__':
     data3 = np.array([4, 1, 3, 2, 5, 2, 4, 3, 6, 3, 5, 4, 7, 4, 6, 5, 8, 5, 7, 6]).reshape(5, 4)
     dfp = pd.DataFrame(data3, index=list('abcde'), columns=['four', 'one', 'three', 'two'])
-    print(dfp)
+
     x = OperatorParser()
+
+    print(x.feature_trans('stdscaler',dfp))
+    print(x.feature_trans('zscore',dfp))
     print(x.feature_trans('sigmoid',dfp))
