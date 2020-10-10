@@ -183,9 +183,11 @@ class DatasetPool():
                             # for trans features.
                             __df_trans_raw_data = __df_raw_data
                             __df_trans_raw_data.iloc[:,__feature] = operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
+                            print(__df_trans_raw_data)
 
                             score_trans = pool.apply_async( self.run_training_model, ( __df_trans_raw_data, __dataset_name,str(__label), ) ).get()
                             # score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
+
                             logHandler.info("{}{}".format( 'SUCC SCORED: ', (score_trans - score_origin)  ) )
 
                             df_lfe_table.loc[__dataset_name,__label,__feature] = (score_trans - score_origin)
