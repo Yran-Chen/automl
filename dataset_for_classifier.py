@@ -8,7 +8,6 @@ from time import *
 
 from sklearn import preprocessing
 import copy
-from sklearn.model_selection import cross_val_score
 from multiprocessing import Process, Pool
 
 model_param = {
@@ -52,6 +51,10 @@ from common.dataset_transfer import OperatorParser
 operatorParser = OperatorParser()
 
 PROCESS_NUM = 8
+
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 class DatasetPool():
 
@@ -181,11 +184,16 @@ class DatasetPool():
                             start_time = time()
 
                             # for trans features.
-                            __df_trans_raw_data = __df_raw_data
+                            __df_trans_raw_data = copy.deepcopy(__df_raw_data)
                             __df_trans_raw_data.iloc[:,__feature] = operatorParser.feature_trans(oprtr,__df_raw_data.iloc[:,__feature])
-                            print(__df_trans_raw_data)
+                            print(__df_trans_raw_data.head(10))
 
-                            score_trans = pool.apply_async( self.run_training_model, ( __df_trans_raw_data, __dataset_name,str(__label), ) ).get()
+                            score_trans = pool.apply_async( self.run_training_model,
+                            (
+                            __df_trans_raw_data,
+                            __dataset_name,
+                            str(__label), )
+                            ).get()
                             # score_trans = self.run_training_model(df_raw_data=__df_trans_raw_data,dataset_name = __dataset_name, label = __label)
 
                             logHandler.info("{}{}".format( 'SUCC SCORED: ', (score_trans - score_origin)  ) )
@@ -226,11 +234,12 @@ class DatasetPool():
     # @logTime(_log=logHandler)
     def run_training_model(self,df_raw_data,dataset_name,label):
 
-        from sklearn.ensemble import GradientBoostingClassifier
-        from sklearn.ensemble import RandomForestClassifier
+        print("#"*50,df_raw_data.head(10))
 
-        df_raw_data = df_raw_data.sample(frac=1)
+        # df_raw_data = df_raw_data.sample(frac=1)
         df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str)) )
+
+        print("#"*50,df_raw_data.head(10))
 
         #trans to 1vR task.
         df_raw_data_label[df_raw_data_label!=label] = 'non_label'
@@ -238,6 +247,10 @@ class DatasetPool():
 
         data_y = labelendr.fit_transform(df_raw_data_label)
         data_x = df_raw_data.iloc[:,0:-1].values
+
+        print("#"*50,df_raw_data.head(10))
+
+        print(data_x)
 
         logHandler.info(str(data_x.shape))
         # logHandler.info(str(data_y))
@@ -249,9 +262,14 @@ class DatasetPool():
         # np_data_y = onehot_label.toarray()
 
         # feed into model.
-        model = eval(self.pre_model)
-        clf_svc_cv = model(**self.pre_model_setting)
-        scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
+        # model = eval(self.pre_model)
+        # clf_svc_cv = model(**self.pre_model_setting)
+        # clf_svc_cv = GradientBoostingClassifier()
+        # clf_svc_cv.fit(data_x,data_y)
+        # scores_clf_cv = clf_svc_cv.score(data_x,data_y)
+        #
+        scores_clf_cv = data_x.mean()
+        # scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
         print(scores_clf_cv)
         print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
         return scores_clf_cv.mean()
