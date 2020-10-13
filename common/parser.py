@@ -503,6 +503,9 @@ class Parser:
         a.append(b)
         return a
 
+    def zero(self,a):
+        return (a * 0.0)
+
     def __init__(self):
         self.success = False
         self.errormsg = ''
@@ -539,6 +542,7 @@ class Parser:
             'sigmoid':self.sigmoid,
             'cbrt':self.cbrt,
             'stdscaler':self.stdscaler,
+            'zero':self.zero,
 
         }
 

@@ -5,7 +5,7 @@ import numpy as np
 
 DICT_R_ARY ={
     1 : ['sqrt', 'log', 'freq', 'zscore','square',
-         'sigmoid','cbrt','stdscaler'
+         'sigmoid','cbrt','stdscaler','zero'
         ],
 
     2 : ['add', 'sub', 'mul', 'div',
@@ -39,6 +39,6 @@ if __name__ == '__main__':
 
     x = OperatorParser()
 
-    print(x.feature_trans('stdscaler',dfp))
-    print(x.feature_trans('zscore',dfp))
-    print(x.feature_trans('sigmoid',dfp))
+    # print(x.feature_trans('stdscaler',dfp))
+    # print(x.feature_trans('zscore',dfp))
+    print(x.feature_trans('zero',dfp))

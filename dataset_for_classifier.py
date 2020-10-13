@@ -55,6 +55,7 @@ PROCESS_NUM = 8
 from sklearn.model_selection import cross_val_score
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.ensemble import RandomForestClassifier
+import catboost as cb
 
 class DatasetPool():
 
@@ -265,10 +266,12 @@ class DatasetPool():
         # model = eval(self.pre_model)
         # clf_svc_cv = model(**self.pre_model_setting)
         # clf_svc_cv = GradientBoostingClassifier()
+        cbmodel = cb.CatBoostClassifier(iterations=100)
+        cbmodel.fit(data_x,data_y,plot = False,silent = True)
         # clf_svc_cv.fit(data_x,data_y)
-        # scores_clf_cv = clf_svc_cv.score(data_x,data_y)
+        scores_clf_cv = cbmodel.score(data_x,data_y)
         #
-        scores_clf_cv = data_x.mean()
+        # scores_clf_cv = data_x.mean()
         # scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
         print(scores_clf_cv)
         print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
