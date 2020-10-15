@@ -14,7 +14,6 @@ DICT_R_ARY ={
 
 class OperatorParser():
 
-
     def __init__(self):
         self.parser = parser.Parser()
 
@@ -41,4 +40,7 @@ if __name__ == '__main__':
 
     # print(x.feature_trans('stdscaler',dfp))
     # print(x.feature_trans('zscore',dfp))
-    print(x.feature_trans('zero',dfp))
+    # print(dfp)
+    tran_dfp = dfp
+    tran_dfp.loc[:,'two'] = x.feature_trans('cbrt',dfp.loc[:,'two'])
+    print(tran_dfp)
