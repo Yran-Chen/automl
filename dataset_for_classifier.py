@@ -93,6 +93,13 @@ class DatasetPool():
         self.dataset_preprocessing(**kwargs)
         self.operator_pretraining(**kwargs)
 
+    def train(self,**kwargs):
+        self.dataset_preprocessing(**kwargs)
+        self.train_LFE_learner(**kwargs)
+        return
+
+    def train_LFE_learner(self):
+        return
 
     # dataframe [dataset_Name , operater]
     # dataset_Name: [dataset_1vR_label]
@@ -106,6 +113,7 @@ class DatasetPool():
         #load dataset config.
         self.dataset_config = self.load_dataset_config()
         self.update_dataset_config()
+        print(self.dataset_config)
         #save dataset config.
         self.save_dataset_config()
 
@@ -394,7 +402,11 @@ class DatasetPool():
             for name in self.dataset:
                 if name not in df_oprtr_dataset_name:
                     for __label in self.dataset_config[name]['label']:
-                        df_oprtr = df_oprtr.append({'dataset_name': name ,'label': __label, 'performance':np.nan},ignore_index=True)
+                        for __feature in range(self.dataset_config[name]['shape'][1] - 1):
+                            df_oprtr = df_oprtr.append({'dataset_name': name ,
+                                                        'label': __label,
+                                                        'feature': __feature,
+                                                        'performance':np.nan}, ignore_index=True)
             self.dict_LFEtable[oprtr] = df_oprtr
 
     # aborted.
