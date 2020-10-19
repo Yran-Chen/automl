@@ -43,7 +43,7 @@ PARAM_TEST = {
     'percent':1.0,
 }
 
-from common.utils import LogHandler, log, logTime
+from common.utils import LogHandler,log,_read_pickle,_save_pickle,create_dir
 logHandler = LogHandler()._log
 
 
@@ -95,24 +95,71 @@ class DatasetPool():
 
 
         self.pool = None
-
         self.dataset_input = {}
 
-    # @log(_log = logHandler)
+
+    @log(_log = logHandler)
     def run(self,**kwargs):
         self.dataset_preprocessing(**kwargs)
         self.operator_pretraining(**kwargs)
 
     def train(self,**kwargs):
         self.dataset_preprocessing(**kwargs)
-        self.train_LFE_learner(**kwargs)
+        self.run_LFE_learner(**kwargs)
         return
 
-    def train_LFE_learner(self):
+    def run_LFE_learner(self):
+
+        for oprtr in self.operator:
+            operator_dataset = self.prepare_operator_dataset(oprtr)
+
         return
 
     # dataframe [dataset_Name , operater]
     # dataset_Name: [dataset_1vR_label]
+
+    def prepare_operator_dataset(self,oprtr:str)->pd.DataFrame:
+
+        from common.cal_utils import threshold_cut,quantileSkrechArray
+
+        df_lfe_table = copy.deepcopy(self.dict_LFEtable[oprtr])
+
+        # trained on selected dataset.
+        df_lfe_table = df_lfe_table.loc[
+            df_lfe_table['dataset_name'].isin(self.dataset)]
+
+        df_lfe_table = df_lfe_table.set_index(['dataset_name', 'label', 'feature'])
+        print('Chosen threshold: ',self.threshold)
+        print('Half equal threshlod:',np.percentile(df_lfe_table.dropna(), 50))
+
+        self.threshold = np.percentile(df_lfe_table.dropna(), 50)
+        threshed_oprtr_performance = pd.DataFrame(threshold_cut(df_lfe_table['performance'], self.threshold).dropna())
+        threshed_oprtr_performance = threshed_oprtr_performance.reset_index()
+        threshed_oprtr_performance.drop(labels=['label'],axis=1,inplace=True)
+
+        print("Sampled number for oprtr: {} ".format(len(threshed_oprtr_performance)))
+        oprtr_array = []
+        # print(threshed_oprtr_performance)
+        # dataset_list = list(threshed_oprtr_performance.index.get_level_values(0).unique())
+        for pivoti in threshed_oprtr_performance.index:
+            __dataset_name = threshed_oprtr_performance.loc[pivoti]['dataset_name']
+            __feature = threshed_oprtr_performance.loc[pivoti]['feature']
+            __class = threshed_oprtr_performance.loc[pivoti]['performance']
+            # print(__dataset_name,__feature,__class)
+            __df_raw_data = self.load_dataset_data(__dataset_name)[0].sample(frac = 1).iloc[:,__feature]
+            # print(__df_raw_data.shape)
+            __QSA_data = np.array(
+                quantileSkrechArray(np.array(__df_raw_data), range=(-10, 10))
+            ).reshape(-1)
+            print(__QSA_data)
+            oprtr_array.append(
+                np.append(__QSA_data,__class)
+            )
+        # print(np.array(oprtr_array).shape)
+            # oprtr_array.append()
+
+        return np.array(oprtr_array)
+
     def dataset_preprocessing(self,**kwargs):
         begin_time = time()
 
@@ -334,7 +381,7 @@ class DatasetPool():
         load_path = os.path.join(self.save_dir,self.name,'dataset_config.pickle')
         if os.path.exists(load_path):
             print('Succ load dataset conf.')
-            return DatasetPool._read_pickle(load_path)
+            return _read_pickle(load_path)
         else:
             return {}
 
@@ -355,7 +402,7 @@ class DatasetPool():
 
     def save_dataset_config(self):
         save_path = os.path.join(self.save_dir,self.name,'dataset_config.pickle')
-        DatasetPool._save_pickle(self.dataset_config,save_path)
+        _save_pickle(self.dataset_config,save_path)
 
     # dataset_name, dataset_shape, label
     def gather_dataset_information(self,dataset_name) -> dict:
@@ -395,7 +442,7 @@ class DatasetPool():
         df_lfe_table = self.dict_LFEtable[operator]
         save_path = os.path.join(self.save_dir,self.name,operator,'lfe_table.csv')
         fn = os.path.abspath(save_path)
-        DatasetPool.create_dir(fn)
+        create_dir(fn)
         self.save_csv_from_df(fn,df_lfe_table,True)
         return None
 
@@ -453,54 +500,6 @@ class DatasetPool():
     def load_from_csv(self,__path: str) -> pd.DataFrame:
         df_csv = pd.read_csv(__path,header = None)
         return df_csv
-
-    @staticmethod
-    def _save_pickle(file, file_dir):
-        fn = os.path.abspath(file_dir)
-        DatasetPool.create_dir(fn)
-        with open(fn, 'wb') as f:
-            pickle.dump(file, f)
-        f.close()
-
-    @staticmethod
-    def _read_pickle(fp):
-        content = dict()
-        try:
-            with open(fp, 'rb') as f:
-                content = pickle.load(f)
-        except IOError as e:
-            if e.errno not in (errno.ENOENT, errno.EISDIR, errno.EINVAL):
-                raise
-        return content
-
-    @staticmethod
-    def _read_json(fp):
-        content = dict()
-        try:
-            with codecs.open(fp, 'r', encoding='utf-8') as f:
-                content = json.load(f)
-        except IOError as e:
-            if e.errno not in (errno.ENOENT, errno.EISDIR, errno.EINVAL):
-                raise
-        return content
-
-    @staticmethod
-    def _save_json(serializable, file_dir):
-        fn = os.path.abspath(file_dir)
-        DatasetPool.create_dir(fn)
-        with codecs.open(fn, 'w', encoding='utf-8') as f:
-            json.dump(serializable, f, separators=(',\n', ': '))
-
-    @staticmethod
-    def create_dir(file_dir):
-        if not os.path.exists(os.path.dirname(file_dir)):
-            try:
-                os.makedirs(os.path.dirname(file_dir))
-            except OSError as exc:  # Guard against race condition
-                if exc.errno != errno.EEXIST:
-                    raise EnvironmentError
-                else:
-                    print("???")
 
     """
     for hdfs pipeline

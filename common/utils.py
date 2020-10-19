@@ -96,3 +96,57 @@ def logTime(_log):
         return wrapper
 
     return decorator
+
+import codecs
+import json
+import errno
+import pickle
+
+
+
+def _save_pickle(file, file_dir):
+        fn = os.path.abspath(file_dir)
+        create_dir(fn)
+        with open(fn, 'wb') as f:
+            pickle.dump(file, f)
+        f.close()
+
+
+def _read_pickle(fp):
+        content = dict()
+        try:
+            with open(fp, 'rb') as f:
+                content = pickle.load(f)
+        except IOError as e:
+            if e.errno not in (errno.ENOENT, errno.EISDIR, errno.EINVAL):
+                raise
+        return content
+
+
+def _read_json(fp):
+        content = dict()
+        try:
+            with codecs.open(fp, 'r', encoding='utf-8') as f:
+                content = json.load(f)
+        except IOError as e:
+            if e.errno not in (errno.ENOENT, errno.EISDIR, errno.EINVAL):
+                raise
+        return content
+
+
+def _save_json(serializable, file_dir):
+        fn = os.path.abspath(file_dir)
+        create_dir(fn)
+        with codecs.open(fn, 'w', encoding='utf-8') as f:
+            json.dump(serializable, f, separators=(',\n', ': '))
+
+
+def create_dir(file_dir):
+        if not os.path.exists(os.path.dirname(file_dir)):
+            try:
+                os.makedirs(os.path.dirname(file_dir))
+            except OSError as exc:  # Guard against race condition
+                if exc.errno != errno.EEXIST:
+                    raise EnvironmentError
+                else:
+                    print("???")
