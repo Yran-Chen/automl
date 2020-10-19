@@ -58,6 +58,14 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 import catboost as cb
 
+
+"""
+FOR DEBUG ONLY.
+"""
+np.set_printoptions(threshold=np.inf)
+from warnings import simplefilter
+simplefilter(action='ignore', category=FutureWarning)
+
 class DatasetPool():
 
     def __init__(self,param):
@@ -80,6 +88,8 @@ class DatasetPool():
         self.dict_LFEtable_config = None
         self.dict_dataset_config = None
 
+        self.rm_cache = param['rm_cache']
+
         # from common.dataset_transfer import OperatorParser
         # self.operatorParser = OperatorParser()
 
@@ -88,7 +98,7 @@ class DatasetPool():
 
         self.dataset_input = {}
 
-    @log(_log = logHandler)
+    # @log(_log = logHandler)
     def run(self,**kwargs):
         self.dataset_preprocessing(**kwargs)
         self.operator_pretraining(**kwargs)
@@ -120,11 +130,18 @@ class DatasetPool():
         # load LFEtable, each operator has a table stocked pre-learned performace on all existing datasets.
         self.operator = self.operator
         for oprtr in self.operator:
-            # load LFEtable for new dataset_config.
             self.dict_LFEtable[oprtr] = self.load_LFE_table(oprtr)
+
+            #rm cache
+            if self.rm_cache:
+                self.remove_LFE_table(oprtr,self.dataset)
+
+            # load LFEtable for new dataset_config.
             self.update_LFE_table(oprtr)
+
             # save LFEtable.
             self.save_LFE_table(oprtr)
+            # print (self.dict_LFEtable[oprtr])
 
         end_time = time()
         print('Time Usage for data preprocessing is : {:.2f}'.format((end_time - begin_time)))
@@ -241,11 +258,13 @@ class DatasetPool():
             pca = PCA(n_components=n_components)
             return df_data.fit_transform(df_data)
 
-    # @logTime(_log=logHandler)
+
     def run_training_model(self,df_raw_data,dataset_name,label):
 
         # df_raw_data = df_raw_data.sample(frac=1)
-        df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str)) )
+        df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str) ) )
+        # print(df_raw_data_label)
+        # print(label)
 
         #trans to 1vR task.
         df_raw_data_label[df_raw_data_label!=label] = 'non_label'
@@ -254,7 +273,7 @@ class DatasetPool():
         data_y = labelendr.fit_transform(df_raw_data_label)
         data_x = df_raw_data.iloc[:,0:-1].values
 
-        # print("#"*50,'\n',df_raw_data.head(10))
+        # print("#" * 50, '\n', data_y)
 
         logHandler.info(str(data_x.shape))
         logHandler.info(data_x.mean())
@@ -277,8 +296,8 @@ class DatasetPool():
 
         scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
 
-        print(scores_clf_cv)
-        print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
+        # print(scores_clf_cv)
+        # print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
         return scores_clf_cv.mean()
 
     def load_dataset_name(self)->list:
@@ -362,6 +381,15 @@ class DatasetPool():
         shape = list(df_data.shape)
         return df_data,label,shape
 
+
+    def remove_LFE_table(self,operator:str,dataset_name)->None:
+        df_lfe_table = self.dict_LFEtable[operator]
+
+        df_lfe_table = df_lfe_table[~df_lfe_table['dataset_name'].isin(dataset_name)]
+        # print(df_lfe_table)
+
+        self.dict_LFEtable[operator] = df_lfe_table
+        return None
 
     def save_LFE_table(self,operator:str)->None:
         df_lfe_table = self.dict_LFEtable[operator]

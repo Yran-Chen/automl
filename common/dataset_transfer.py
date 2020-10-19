@@ -5,7 +5,7 @@ import numpy as np
 
 DICT_R_ARY ={
     1 : ['sqrt', 'log', 'freq', 'zscore','square',
-         'sigmoid','cbrt','stdscaler','zero'
+         'sigmoid','cbrt','stdscaler','zero','freq'
         ],
 
     2 : ['add', 'sub', 'mul', 'div',
@@ -30,10 +30,14 @@ class OperatorParser():
         if ary_num == 1:
             expr = '{}(data)'.format(oprtr)
             df_trans = self.parser_eval(expr,dict_parse)
-        return pd.DataFrame(df_trans)
+        return np.array(df_trans)
 
 if __name__ == '__main__':
-    data3 = np.array([4, 1, 3, 2, 5, 2, 4, 3, 6, 3, 5, 4, 7, 4, 6, 5, 8, 5, 7, 6]).reshape(5, 4)
+    data3 = np.array([0, 1, 3, 5,
+                      0, 2, 4, 1,
+                      1, 3, 5, 3,
+                      1, 4, 6, 5,
+                      0, 5, 7, 3]).reshape(5, 4)
     dfp = pd.DataFrame(data3, index=list('abcde'), columns=['four', 'one', 'three', 'two'])
 
     x = OperatorParser()
@@ -42,5 +46,6 @@ if __name__ == '__main__':
     # print(x.feature_trans('zscore',dfp))
     # print(dfp)
     tran_dfp = dfp
-    tran_dfp.loc[:,'two'] = x.feature_trans('cbrt',dfp.loc[:,'two'])
+    print(tran_dfp)
+    tran_dfp.loc[:,'two'] = x.feature_trans('freq',dfp.loc[:,'two'])
     print(tran_dfp)

@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import common.datetime_process as dtp
-
+import copy
 TNUMBER = 0
 TOP1 = 1
 TOP2 = 2
@@ -506,6 +506,15 @@ class Parser:
     def zero(self,a):
         return (a * 0.0)
 
+    def freq(self,a):
+        # def __freq(x):
+        #     return x.value_counts() / len(x)
+        freq_counter = a.value_counts()
+        x = copy.deepcopy(a)
+        for i in x.index:
+            x.loc[i] = freq_counter[a.loc[i]]
+        return x
+
     def __init__(self):
         self.success = False
         self.errormsg = ''
@@ -543,6 +552,7 @@ class Parser:
             'cbrt':self.cbrt,
             'stdscaler':self.stdscaler,
             'zero':self.zero,
+            'freq':self.freq,
 
         }
 
