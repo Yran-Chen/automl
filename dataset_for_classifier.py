@@ -109,9 +109,23 @@ class DatasetPool():
         return
 
     def run_LFE_learner(self):
+        train_cache = 1
 
         for oprtr in self.operator:
-            operator_dataset = self.prepare_operator_dataset(oprtr)
+            oprtr_dataset_path = os.path.join(self.save_dir, self.name, oprtr,'data.csv')
+            create_dir(oprtr_dataset_path)
+
+            if train_cache:
+                try:
+                    operator_dataset = self.load_from_csv(oprtr_dataset_path)
+                except :
+                    raise FileNotFoundError
+
+            else:
+                operator_dataset = self.prepare_operator_dataset(oprtr)
+                self.save_csv_from_df ( oprtr_dataset_path, operator_dataset)
+
+
 
         return
 
@@ -129,10 +143,15 @@ class DatasetPool():
             df_lfe_table['dataset_name'].isin(self.dataset)]
 
         df_lfe_table = df_lfe_table.set_index(['dataset_name', 'label', 'feature'])
-        print('Chosen threshold: ',self.threshold)
-        print('Half equal threshlod:',np.percentile(df_lfe_table.dropna(), 50))
 
-        self.threshold = np.percentile(df_lfe_table.dropna(), 50)
+        threshold_75 = np.percentile(df_lfe_table.dropna(), 75)
+        print('Chosen threshold: ',self.threshold)
+        print('75 equal threshlod:',threshold_75)
+
+        if threshold_75 < self.threshold:
+            self.threshold = threshold_75
+            print ('Changed to 75 equal threshold.')
+
         threshed_oprtr_performance = pd.DataFrame(threshold_cut(df_lfe_table['performance'], self.threshold).dropna())
         threshed_oprtr_performance = threshed_oprtr_performance.reset_index()
         threshed_oprtr_performance.drop(labels=['label'],axis=1,inplace=True)
@@ -151,14 +170,11 @@ class DatasetPool():
             __QSA_data = np.array(
                 quantileSkrechArray(np.array(__df_raw_data), range=(-10, 10))
             ).reshape(-1)
-            print(__QSA_data)
             oprtr_array.append(
                 np.append(__QSA_data,__class)
             )
-        # print(np.array(oprtr_array).shape)
-            # oprtr_array.append()
-
-        return np.array(oprtr_array)
+        # print(np.array(oprtr_array))
+        return pd.DataFrame(oprtr_array)
 
     def dataset_preprocessing(self,**kwargs):
         begin_time = time()

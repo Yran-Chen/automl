@@ -14,7 +14,8 @@ import numpy as np
 def quantileSkrechArray(npary,bins = 200, range=(-10,10))->pd.DataFrame:
     tpary = np.interp(npary,(npary.min(),npary.max()),(range[0], range[1]))
     # print(tpary)
-    return pd.DataFrame(np.histogram(tpary,bins=bins,range = range)[0])
+    Bj = pd.DataFrame(np.histogram(tpary,bins=bins,range = range)[0])
+    return Bj / Bj.sum()
 
 if __name__ == '__main__':
 

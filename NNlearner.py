@@ -6,11 +6,12 @@ import time
 import math
 from common import *
 from model.nets import *
+import keras
 
 class NNlearner():
 
-    def __init__():
-        pass
+    def __init__(self,opt):
+        self.opt = opt
 
     def parsing_size(self):
         opt = self.opt
@@ -67,5 +68,47 @@ class NNlearner():
                 lambda: train_dense_dep,
                 lambda: val_dense_dep)
 
+
+        '''
+        Model And Loss Definition Part
+        '''
+        with tf.name_scope("MLP"):
+            net_handler = NetHandler()
+            net = net_handler.multilayer_perceptron(input_data)
+
+        with tf.name_scope("compute_loss"):
+            # define loss we use
+            loss = euclidean_loss(pre, dense_dep)
+            regular_loss = tf.add_n(tf.losses.get_regularization_losses())
+            total_loss = loss + regular_loss
+
+        '''
+        Training Optimizer Part
+        '''
+        with tf.name_scope("train_op"):
+            global_step = tf.Variable(0,
+                                      name='global_step',
+                                      trainable=False)
+            optim = tf.train.AdamOptimizer(opt.base_lr, opt.beta1)
+
+            # get gradient computed using loss
+            grads_and_vars = optim.compute_gradients(total_loss)
+            gradients, variables = zip(*grads_and_vars)
+
+            # if clip gradient needed, using opt.clip_gradient_value to clip
+            # gradient
+            if opt.clip_gradient_flag:
+                print ( "Choose Clip Gradient by thresh value {}".format(opt.clip_gradient_value) )
+                gradients, _ = tf.clip_by_global_norm(
+                    gradients, opt.clip_gradient_value)
+            grads_and_vars = zip(gradients, variables)
+
+            # update train_variables
+            train_opt = optim.apply_gradients(
+                grads_and_vars, global_step=global_step)
+
+        """
+        to be coded.
+        """
 
         return

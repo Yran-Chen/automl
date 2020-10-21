@@ -33,7 +33,7 @@ class OperatorParser():
         return np.array(df_trans)
 
 if __name__ == '__main__':
-    data3 = np.array([0, 1, 3, 5,
+    data3 = np.array([0, 1, 3, 4,
                       0, 2, 4, 1,
                       1, 3, 5, 3,
                       1, 4, 6, 5,

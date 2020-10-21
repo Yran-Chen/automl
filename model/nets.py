@@ -21,8 +21,8 @@ class NetHandler():
                 input_x,
                 hidden_unit = hidden_unit_num,
                 activation='relu',
-                weights_initializer=tf.contrib.layers.xavier_initializer(),
-                weight_decay=0.0,
+                weights_initializer=self.weights_initializer,
+                weight_decay=self.weight_decay,
                 name="hidden_1"
             )
 
@@ -30,8 +30,8 @@ class NetHandler():
                 h1_output,
                 hidden_unit=2,
                 activation='softmax',
-                weights_initializer=tf.contrib.layers.xavier_initializer(),
-                weight_decay=0.0,
+                weights_initializer=self.weights_initializer,
+                weight_decay=self.weight_decay,
                 name="hidden_1"
 
             )

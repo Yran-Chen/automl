@@ -513,7 +513,7 @@ class Parser:
         x = copy.deepcopy(a)
         for i in x.index:
             x.loc[i] = freq_counter[a.loc[i]]
-        return x
+        return x / len(x)
 
     def __init__(self):
         self.success = False
