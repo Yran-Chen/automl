@@ -9,6 +9,7 @@
 
 
 import tensorflow as tf
+from keras.callbacks import Tensorboard
 from tensorflow import keras
 from tensorflow.keras import layers
 print(tf.__version__)

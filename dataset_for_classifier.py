@@ -74,11 +74,11 @@ class DatasetPool():
         self.data_dir = param['data_dir']
         self.save_dir = param['save_dir']
         self.operator = param['operator']
-        self.threshold = param['threshold']
 
-        self.pre_model_param = param['pre_model_param']
-        self.pre_model = self.pre_model_param['model']
-        self.pre_model_setting = self.pre_model_param['model_settings']
+
+        pre_model_param = param['pre_model_param']
+        self.pre_model = pre_model_param['model']
+        self.pre_model_setting = pre_model_param['model_settings']
 
         self.selected = param['selected']
         self.percent_ = param['percent']
@@ -88,7 +88,14 @@ class DatasetPool():
         self.dict_LFEtable_config = None
         self.dict_dataset_config = None
 
+        learner_param = param['learner_param']
+        self.learner_name = learner_param['name']
+        self.learner_if_clean = learner_param['if_clean']
+        self.train_cache = learner_param['train_cache']
+        self.threshold = learner_param['threshold']
+
         self.rm_cache = param['rm_cache']
+
 
         # from common.dataset_transfer import OperatorParser
         # self.operatorParser = OperatorParser()
@@ -96,6 +103,7 @@ class DatasetPool():
 
         self.pool = None
         self.dataset_input = {}
+        self.dataset_input_oprtr = {}
 
 
     @log(_log = logHandler)
@@ -103,60 +111,86 @@ class DatasetPool():
         self.dataset_preprocessing(**kwargs)
         self.operator_pretraining(**kwargs)
 
-    def train(self,**kwargs):
+    @log(_log = logHandler)
+    def data_forward(self,**kwargs):
         self.dataset_preprocessing(**kwargs)
         self.run_LFE_learner(**kwargs)
         return
 
     def run_LFE_learner(self):
-        train_cache = 1
 
         for oprtr in self.operator:
-            oprtr_dataset_path = os.path.join(self.save_dir, self.name, oprtr,'data.csv')
+            oprtr_dataset_path = os.path.join(self.save_dir, 'dataset', self.learner_name, oprtr, 'data.csv')
             create_dir(oprtr_dataset_path)
 
-            if train_cache:
+            begin_time = time()
+
+            if self.train_cache:
                 try:
                     operator_dataset = self.load_from_csv(oprtr_dataset_path)
                 except :
-                    raise FileNotFoundError
+                    operator_dataset = self.prepare_operator_dataset(oprtr)
+                    self.save_csv_from_df(oprtr_dataset_path, operator_dataset)
 
             else:
                 operator_dataset = self.prepare_operator_dataset(oprtr)
-                self.save_csv_from_df ( oprtr_dataset_path, operator_dataset)
+                self.save_csv_from_df( oprtr_dataset_path, operator_dataset)
 
-
+            end_time = time()
+            print('Time Usage for op {} dataset create is : {:.2f}'.format(oprtr, (end_time - begin_time)))
+            logHandler.info('Time Usage for op {} dataset create is : {:.2f}'.format(oprtr, (end_time - begin_time)))
 
         return
 
-    # dataframe [dataset_Name , operater]
-    # dataset_Name: [dataset_1vR_label]
 
-    def prepare_operator_dataset(self,oprtr:str)->pd.DataFrame:
-
-        from common.cal_utils import threshold_cut,quantileSkrechArray
+    def prepare_operator_dataset(self,oprtr:str,if_clean = True)->pd.DataFrame:
 
         df_lfe_table = copy.deepcopy(self.dict_LFEtable[oprtr])
 
         # trained on selected dataset.
         df_lfe_table = df_lfe_table.loc[
             df_lfe_table['dataset_name'].isin(self.dataset)]
-
         df_lfe_table = df_lfe_table.set_index(['dataset_name', 'label', 'feature'])
 
-        threshold_75 = np.percentile(df_lfe_table.dropna(), 75)
-        print('Chosen threshold: ',self.threshold)
-        print('75 equal threshlod:',threshold_75)
+        print ('@{} Dataset Processing...'.format(oprtr))
+        logHandler.info('@{} Dataset Processing...'.format(oprtr))
 
-        if threshold_75 < self.threshold:
-            self.threshold = threshold_75
-            print ('Changed to 75 equal threshold.')
+        if self.learner_if_clean:
+            self.clean_data(df_lfe_table,range = [-0.005,0.005])
+        threshed_oprtr_performance = self.threshold_forward(df_lfe_table)
+        return self.QSA_forward(threshed_oprtr_performance)
+
+
+
+    def clean_data(self,data,range = [-0.005,0.005]):
+        return data[(data['performance']<range[0])&(data['performance']>range[1])]
+
+
+
+    def threshold_forward(self,df_lfe_table,autoset=True,fixed_threshold = 66):
+        from common.cal_utils import threshold_cut
+        threshold_autoset = np.percentile(df_lfe_table.dropna(), fixed_threshold)
+        print('Chosen threshold: ',self.threshold)
+        print('{} equal threshlod:'.format(fixed_threshold),threshold_autoset)
+
+        if self.threshold is None:
+            self.threshold = threshold_autoset
+            print ('Changed to {} equal threshold.'.format(fixed_threshold))
 
         threshed_oprtr_performance = pd.DataFrame(threshold_cut(df_lfe_table['performance'], self.threshold).dropna())
         threshed_oprtr_performance = threshed_oprtr_performance.reset_index()
         threshed_oprtr_performance.drop(labels=['label'],axis=1,inplace=True)
 
-        print("Sampled number for oprtr: {} ".format(len(threshed_oprtr_performance)))
+        print("Sampled number: {} ".format(len(threshed_oprtr_performance)))
+        logHandler.info("Sampled number: {} ".format(len(threshed_oprtr_performance)))
+        logHandler.info("Threshlod: {}".format(self.threshold))
+
+        return threshed_oprtr_performance
+
+
+
+    def QSA_forward(self,threshed_oprtr_performance):
+        from common.cal_utils import quantileSkrechArray
         oprtr_array = []
         # print(threshed_oprtr_performance)
         # dataset_list = list(threshed_oprtr_performance.index.get_level_values(0).unique())
@@ -176,6 +210,9 @@ class DatasetPool():
         # print(np.array(oprtr_array))
         return pd.DataFrame(oprtr_array)
 
+
+    # dataframe [dataset_Name , operater]
+    # dataset_Name: [dataset_1vR_label]
     def dataset_preprocessing(self,**kwargs):
         begin_time = time()
 

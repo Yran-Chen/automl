@@ -50,7 +50,7 @@ def log(_log):
 
     def decorator(f):
 
-        def wrapper(ins, *args):
+        def wrapper(ins, *args,**kwargs):
             _log.info('{} start at {}'.format(f.__name__, str(time.ctime())))
             _log.info('********************************************************************************')
             _log.info('input json:')
@@ -58,7 +58,7 @@ def log(_log):
                 _log.info('{}, {}'.format(k, v))
             _log.info('********************************************************************************')
             try:
-                a = f(ins, *args)
+                a = f(ins, *args,**kwargs)
                 _log.info('{} end at {}'.format(f.__name__, str(time.ctime())))
             except Exception as e:
                 _log.error(e, exc_info=True)
