@@ -252,7 +252,7 @@ PROCESS_NUM = 4
 
 if __name__ == '__main__':
     # '172.16.10.119',  '172.16.10.117', '172.16.10.116'
-    ipadress = ['172.16.10.119','172.16.10.117', '172.16.10.116']
+    ipadress = ['172.16.10.119', '172.16.10.117', '172.16.10.116']
     ipadress_kudu = ['172.16.8.107','172.16.8.108','172.16.8.109']
     username = 'root'
     password = 'DrpEco@2020'
@@ -262,30 +262,46 @@ if __name__ == '__main__':
     num = 0
 
     OP_DICT = ['zscore', 'cbrt', 'sigmoid', 'stdscaler']
+    OP_DICT_NEW = ['zscore', 'sigmoid', 'stdscaler' ]
     OP_DICT_1019 = ['stdscaler', 'cbrt', 'sigmoid', 'freq']
     OP_DICT_1020 = ['freq']
-    OP_DICT_1022 = ['cbrt','sigmoid']
+    OP_DICT_1028 = ['cbrt','sigmoid']
 
     from multiprocessing import Process, Pool
     pool = Pool(processes=PROCESS_NUM)
+
+    train_119_cmd = 'nohup python /data/!workspace/automl/main_remote.py ' \
+                    '--op=freq --selected=! --percent=1.0 --name=lr_beta_5000 ' \
+                    '> test.log  2>&1 &'
+
+    train_117_cmd = 'nohup python /data/!workspace/automl/main_remote.py ' \
+                    '--op=cbrt --selected=! --percent=1.0 --name=lr_beta_5000 ' \
+                    '> test.log  2>&1 &'
+
+
+    pool.apply_async(assign_task, ('172.16.10.119', username, password, train_119_cmd,))
+    pool.apply_async(assign_task, ('172.16.10.117', username, password, train_117_cmd,))
 
     for i, _task_ipadress in enumerate(ipadress) :
 
         # cmd for server.
         # sshcmd = 'ls'
         train_cmd = 'nohup python /data/!workspace/automl/main_remote.py ' \
-                 '--op={0} --selected=!f_00480 --percent=1.0 --name=lr_beta > test.log  2>&1 &'.format('')
+                 '--op={0} --selected=! --percent=1.0 --name=lr_beta_5000 ' \
+                    '> test.log  2>&1 &'.format(OP_DICT_NEW[i])
+
+
+
         # train_test_cmd = 'python /data/!workspace/automl/main_remote.py --op={0} --selected=!f_00470 --percent=1.0 --name=bug_1016_multipool_changedfile'.format(OP_DICT[i])
-        # pool.apply_async(assign_task,(_task_ipadress,username,password,train_cmd,))
+        # pool.apply_async(assign_task, (_task_ipadress, username, password, train_cmd,))
 
         #rm cache. (test)
         # sshcmd = 'rm -rf /data/!workspace/Savefile/lr_beta'
         # pool.apply_async(assign_task, (_task_ipadress, username, password, sshcmd,))
 
         # fetch log file.
-        # sync_cmd = ''
-        pool.apply_async(get_log_file, (_task_ipadress, username, password, r"D:\!DTStack\Logfile_remote",'/data/!workspace/Logfile'))
-        pool.apply_async(get_save_file, (_task_ipadress, username, password, r"D:\!DTStack\Savefile_remote\lr_beta", '/data/!workspace/Savefile/lr_beta'))
+        # pool.apply_async(get_log_file, (_task_ipadress, username, password, r"D:\!DTStack\Logfile_remote",'/data/!workspace/Logfile'))
+        # pool.apply_async(get_save_file, (_task_ipadress, username, password, r"D:\!DTStack\Savefile_remote\lr_beta", '/data/!workspace/Savefile/lr_beta'))
 
         # sync main.py
         sshcmd = ''

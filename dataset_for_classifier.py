@@ -91,6 +91,7 @@ class DatasetPool():
         learner_param = param['learner_param']
         self.learner_name = learner_param['name']
         self.learner_if_clean = learner_param['if_clean']
+        self.cleaned_range = learner_param['cleaned_range']
         self.train_cache = learner_param['train_cache']
         self.threshold = learner_param['threshold']
 
@@ -109,11 +110,13 @@ class DatasetPool():
     @log(_log = logHandler)
     def run(self,**kwargs):
         self.dataset_preprocessing(**kwargs)
+        print (self.dataset_config)
         self.operator_pretraining(**kwargs)
 
     @log(_log = logHandler)
     def data_forward(self,**kwargs):
         self.dataset_preprocessing(**kwargs)
+        print (self.dataset_config)
         self.run_LFE_learner(**kwargs)
         return
 
@@ -143,7 +146,7 @@ class DatasetPool():
         return
 
 
-    def prepare_operator_dataset(self,oprtr:str,if_clean = True)->pd.DataFrame:
+    def prepare_operator_dataset(self,oprtr:str)->pd.DataFrame:
 
         df_lfe_table = copy.deepcopy(self.dict_LFEtable[oprtr])
 
@@ -156,54 +159,101 @@ class DatasetPool():
         logHandler.info('@{} Dataset Processing...'.format(oprtr))
 
         if self.learner_if_clean:
-            self.clean_data(df_lfe_table,range = [-0.005,0.005])
+            df_lfe_table = self.clean_data(df_lfe_table,range = self.cleaned_range)
+
         threshed_oprtr_performance = self.threshold_forward(df_lfe_table)
-        return self.QSA_forward(threshed_oprtr_performance)
+        return self.QSA_forward(oprtr,threshed_oprtr_performance)
 
 
 
-    def clean_data(self,data,range = [-0.005,0.005]):
-        return data[(data['performance']<range[0])&(data['performance']>range[1])]
+    def clean_data(self,data,range = [-0.005/2,0.005/2]):
+        return data[(data['performance']<range[0]) | (data['performance']>range[1])]
 
 
 
-    def threshold_forward(self,df_lfe_table,autoset=True,fixed_threshold = 66):
+    def threshold_forward(self,df_lfe_table,autoset=True,fixed_threshold = 50):
         from common.cal_utils import threshold_cut
-        threshold_autoset = np.percentile(df_lfe_table.dropna(), fixed_threshold)
-        print('Chosen threshold: ',self.threshold)
-        print('{} equal threshlod:'.format(fixed_threshold),threshold_autoset)
+        # print(df_lfe_table)
+        threshold_autoset =  np.percentile(df_lfe_table['performance'].dropna(), fixed_threshold)
+        # threshold_autoset = threshold_autoset.astype(np.float32)
+        logHandler.info('Chosen threshold: {}'.format(self.threshold)   )
+        logHandler.info('{} equal threshlod: {}'.format(fixed_threshold,threshold_autoset) )
 
         if self.threshold is None:
-            self.threshold = threshold_autoset
-            print ('Changed to {} equal threshold.'.format(fixed_threshold))
+            if threshold_autoset > 0.01:
+                print('threshold down to 0.01.')
+                threshold_autoset = 0.01
+                __threshold = threshold_autoset
+            else:
+                print('Changed to {} equal threshold.'.format(fixed_threshold))
+                __threshold = threshold_autoset
+        else:
+            __threshold = self.threshold
 
-        threshed_oprtr_performance = pd.DataFrame(threshold_cut(df_lfe_table['performance'], self.threshold).dropna())
+
+        threshed_oprtr_performance = pd.DataFrame(threshold_cut(df_lfe_table['performance'], __threshold).dropna())
         threshed_oprtr_performance = threshed_oprtr_performance.reset_index()
-        threshed_oprtr_performance.drop(labels=['label'],axis=1,inplace=True)
 
+        # threshed_oprtr_performance.drop(labels=['label'],axis=1,inplace=True)
         print("Sampled number: {} ".format(len(threshed_oprtr_performance)))
+        print ('pos percent : {}'.format(
+            np.array(threshed_oprtr_performance['performance']).sum() / len(threshed_oprtr_performance)
+            )
+        )
+
         logHandler.info("Sampled number: {} ".format(len(threshed_oprtr_performance)))
-        logHandler.info("Threshlod: {}".format(self.threshold))
+        logHandler.info("Threshlod: {}".format(__threshold))
 
         return threshed_oprtr_performance
 
 
 
-    def QSA_forward(self,threshed_oprtr_performance):
+    def QSA_forward(self,oprtr,threshed_oprtr_performance,__range = (-10,10)):
         from common.cal_utils import quantileSkrechArray
         oprtr_array = []
-        # print(threshed_oprtr_performance)
-        # dataset_list = list(threshed_oprtr_performance.index.get_level_values(0).unique())
+        tmp_df = {}
+
         for pivoti in threshed_oprtr_performance.index:
             __dataset_name = threshed_oprtr_performance.loc[pivoti]['dataset_name']
             __feature = threshed_oprtr_performance.loc[pivoti]['feature']
+            __label = threshed_oprtr_performance.loc[pivoti]['label']
             __class = threshed_oprtr_performance.loc[pivoti]['performance']
             # print(__dataset_name,__feature,__class)
-            __df_raw_data = self.load_dataset_data(__dataset_name)[0].sample(frac = 1).iloc[:,__feature]
-            # print(__df_raw_data.shape)
+            """
+            debug;
+            """
+            __df_raw_data = copy.deepcopy( self.load_dataset_data(__dataset_name)[0].iloc[:,__feature] )
+
+            if (__dataset_name,__label) not in tmp_df.keys():
+                __df_raw_label = copy.deepcopy( self.load_dataset_data(__dataset_name)[0].iloc[:,-1] )
+                # print(__label)
+
+                logHandler.info(  __label  )
+                logHandler.info( list( __df_raw_label.unique() )  )
+
+                __df_raw_label = __df_raw_label.apply(str)
+                __df_raw_label.loc[(__df_raw_label != str(__label) )] = 'F'
+
+
+                # __df_raw_data.ix[(__df_raw_data.iloc[:,-1] == __label),-1] = 'T'
+
+                #tmp cache
+                tmp_df[(__dataset_name,__label)] = __df_raw_label
+
+            else:
+                __df_raw_label = tmp_df[(__dataset_name,__label)]
+
+            __df_data = pd.concat([__df_raw_data,__df_raw_label],axis=1)
+
+            #trans for df.
+
+            __df_data.iloc[:,0] = operatorParser.feature_trans(oprtr,__df_data.iloc[:,0])
+            # print (__df_data)
+
             __QSA_data = np.array(
-                quantileSkrechArray(np.array(__df_raw_data), range=(-10, 10))
+                __df_data.iloc[:,0].groupby(__df_data.iloc[:, -1]).apply(quantileSkrechArray,range=__range)
             ).reshape(-1)
+
             oprtr_array.append(
                 np.append(__QSA_data,__class)
             )
@@ -217,13 +267,13 @@ class DatasetPool():
         begin_time = time()
 
         self.dataset = self.load_dataset_name()
-        print(self.dataset)
+        logHandler.info(self.dataset)
         self.dataset_dir = self.load_dataset_dir()
 
         #load dataset config.
         self.dataset_config = self.load_dataset_config()
         self.update_dataset_config()
-        print(self.dataset_config)
+        logHandler.info(self.dataset_config)
         #save dataset config.
         self.save_dataset_config()
 
@@ -345,7 +395,6 @@ class DatasetPool():
 
         #train for each dataset.
 
-
         return
 
     def feature_reduction(self,df_data:pd.DataFrame,n_components=49)->pd.DataFrame:
@@ -363,8 +412,6 @@ class DatasetPool():
 
         # df_raw_data = df_raw_data.sample(frac=1)
         df_raw_data_label = copy.deepcopy( (df_raw_data.iloc[:,-1].apply(str) ) )
-        # print(df_raw_data_label)
-        # print(label)
 
         #trans to 1vR task.
         df_raw_data_label[df_raw_data_label!=label] = 'non_label'
@@ -372,8 +419,6 @@ class DatasetPool():
 
         data_y = labelendr.fit_transform(df_raw_data_label)
         data_x = df_raw_data.iloc[:,0:-1].values
-
-        # print("#" * 50, '\n', data_y)
 
         logHandler.info(str(data_x.shape))
         logHandler.info(data_x.mean())
@@ -394,10 +439,23 @@ class DatasetPool():
         # cbmodel.fit(data_x,data_y,plot = False,silent = True)
         # scores_clf_cv = cbmodel.score(data_x, data_y)
 
-        scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
+        """
+        for fastbacktest.
+        """
+        # clf_svc_cv.fit( X=data_x, y=data_y )
+        # scores_clf_cv = clf_svc_cv.score( X=data_x, y=data_y)
 
-        # print(scores_clf_cv)
-        # print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
+        # print(  np.sort(clf_svc_cv.feature_importances_)   )
+        # print (  np.argsort(clf_svc_cv.feature_importances_)  )
+        """
+        for cv backtest.
+        """
+
+        scores_clf_cv = cross_val_score(clf_svc_cv, data_x, data_y, cv = 5)
+        #
+        print(scores_clf_cv)
+        print("Accuracy: %f (+/- %0.4f)" % (scores_clf_cv.mean(), scores_clf_cv.std() * 2))
+
         return scores_clf_cv.mean()
 
     def load_dataset_name(self)->list:
@@ -476,7 +534,7 @@ class DatasetPool():
 
         # For large memory.
         self.dataset_input[dataset_name] = df_data
-
+        # print (df_data)
         label = [ str(lbl) for lbl in df_data.iloc[:,-1].unique()]
         shape = list(df_data.shape)
         return df_data,label,shape
@@ -504,7 +562,8 @@ class DatasetPool():
         load_path = os.path.join(self.save_dir,self.name, operator, 'lfe_table.csv')
         if os.path.exists(load_path):
             print('Succ load LFE table for op {}.'.format(operator))
-            return pd.read_csv(load_path)
+            data_type = {'label':np.str}
+            return pd.read_table(load_path, sep = ',', dtype = data_type)
         else:
             return None
 
@@ -564,6 +623,7 @@ if __name__ == '__main__':
 
     pa = DatasetPool(PARAM_TEST)
     # pa.dataset_preprocessing()
+    # print(pa.dict_LFEtable)
     pa.run()
     # print (pa.dict_LFEtable)
     # print (pa.dataset_config)

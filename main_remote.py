@@ -19,6 +19,15 @@ parser.add_argument('--name',type=str,default=None)
 parser.add_argument('--rm_cache',type=bool,default=None)
 args = parser.parse_args()
 
+
+TEST_learner_param = {
+    'name':'test_beta',
+    'train_cache':False,
+    'if_clean':True,
+    'threshold':0.01/3,
+    'cleaned_range':[-0.01/3,0.01/3]
+}
+
 model_param = {
     'model':'GradientBoostingClassifier',
 
@@ -38,7 +47,7 @@ model_param = {
 model_param_logreg = {
     'model': 'LogisticRegression',
     "model_settings" : {
-    # 'max_iter': 100,
+    'max_iter': 5000,
     },
 }
 
@@ -58,6 +67,30 @@ PARAM_TEST = {
     'pre_model_param':model_param_logreg,
     'percent':1.0,
     'rm_cache':False,
+    'learner_param': TEST_learner_param,
+}
+
+PARAM_BETA = {
+    'name':'lr_beta',
+    'data_dir': '/data/!workspace/dataset/UCI/classification',
+    'save_dir': '/data/!workspace/Savefile',
+    'operator':OP_DICT,
+    'selected': '!f',
+    'pre_model_param':{
+                    'model': 'LogisticRegression',
+                    "model_settings" : {
+                    'max_iter': 5000,
+                    },
+                    },
+    'percent': 1.0,
+    'rm_cache': False,
+    'learner_param':{
+                    'name':'test_beta',
+                    'train_cache':False,
+                    'if_clean':True,
+                    'threshold': 0.002/3,
+                    'cleaned_range':[-0.01/6,0.01/6]
+                    },
 }
 if __name__ == '__main__':
 
@@ -76,7 +109,7 @@ if __name__ == '__main__':
     if args.rm_cache is not None:
         PARAM_TEST['rm_cache'] = args.rm_cache
 
-    print(PARAM_TEST)
+    print(PARAM_BETA)
 
-    pa = DatasetPool(PARAM_TEST)
+    pa = DatasetPool(PARAM_BETA)
     pa.run()

@@ -356,7 +356,10 @@ class Parser:
         return alpha_when.sort_index()
 
     def zscore(self,x):
-        return (x-x.mean(0))/(x.std(0))
+        if x.std(0) !=0:
+            return (x-x.mean(0))/(x.std(0))
+        else:
+            return (x-x.mean(0))
 
     def group_zscore(self,x,group):
         def to_weights(df):

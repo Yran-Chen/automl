@@ -35,8 +35,8 @@ class OperatorParser():
 if __name__ == '__main__':
     data3 = np.array([0, 1, 3, 4,
                       0, 2, 4, 1,
-                      1, 3, 5, 3,
-                      1, 4, 6, 5,
+                      0, 3, 5, 3,
+                      0, 4, 6, 5,
                       0, 5, 7, 3]).reshape(5, 4)
     dfp = pd.DataFrame(data3, index=list('abcde'), columns=['four', 'one', 'three', 'two'])
 

@@ -23,13 +23,11 @@ if __name__ == '__main__':
     print(df)
     print(quantileSkrechArray(df))
 
-
+def bins_cut (df, qcut=5, weights='quantile'):
+    return pd.qcut(x = df, q=qcut,labels=range(qcut),retbins=False)
 
 def threshold_cut(df, thresh):
-
-    return pd.cut(df,[-1,thresh,1], labels=[0,1])
-
-
+    return pd.cut(x = df,bins=np.array([-1.0,float(thresh),1.0]), labels=[0,1])
 
 def quantilize(df, qcut=2, weights='equal', if_opposite=False):
     def quantile_calc(x, q):
